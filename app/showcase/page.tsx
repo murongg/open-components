@@ -37,7 +37,7 @@ const createPreview = (component: Component) => {
     <LiveProvider
       code={component.previewCode}
       noInline={true}
-      // scope={{ React }}
+    // scope={{ React }}
     >
       <div className="h-full flex flex-col">
         {/* Preview Content */}
@@ -221,11 +221,9 @@ export default function ShowcasePage() {
   const [error, setError] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [activeTab, setActiveTab] = useState("preview")
-  
+
   // New: Component order tracking and auto-switching
   const [currentComponentIndex, setCurrentComponentIndex] = useState(0)
-  const [autoSwitchEnabled, setAutoSwitchEnabled] = useState(true)
-  const [autoTabSwitchEnabled, setAutoTabSwitchEnabled] = useState(true)
 
   // Get prompt parameter from URL and auto-generate components
   useEffect(() => {
@@ -266,6 +264,60 @@ export default function ShowcasePage() {
     navigator.clipboard.writeText(text)
   }
 
+  // Download all components as zip file
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const downloadAllComponents = async () => {
+    if (!components.length) {
+      console.error('No components to download')
+      return
+    }
+
+    setIsDownloading(true)
+
+    try {
+      const response = await fetch('/api/download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          components: components.map(component => ({
+            name: component.name,
+            code: component.code,
+            documentation: component.documentation || '',
+            category: component.category,
+            description: component.description
+          }))
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Download failed')
+      }
+
+      // Get the blob from response
+      const blob = await response.blob()
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'all-components.zip'
+      document.body.appendChild(a)
+      a.click()
+
+      // Cleanup
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Download failed:', error)
+      // You could add a toast notification here
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
   // Function to generate components
   const generateComponents = async (promptText: string) => {
     if (!promptText.trim()) return
@@ -275,7 +327,6 @@ export default function ShowcasePage() {
     setSelectedComponent(null)
     setAnalysisResult(null)
     setError(null)
-    setCurrentComponentIndex(0)
     setActiveTab("preview")
 
     try {
@@ -312,11 +363,11 @@ export default function ShowcasePage() {
           if (line.startsWith('event: ')) {
             continue
           }
-          
+
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6))
-              
+
               if (data.type === 'start') {
                 console.log('🚀 Started processing:', data.message)
               } else if (data.type === 'chunk' && data.data) {
@@ -324,22 +375,17 @@ export default function ShowcasePage() {
                 if (data.data.components && Array.isArray(data.data.components)) {
                   const newComponents = data.data.components
                   setComponents(newComponents)
-                  
-                  // Auto-switch components in order
-                  if (autoSwitchEnabled && newComponents.length > 0) {
-                    // If it's a new component, select it
-                    if (newComponents.length > currentComponentIndex) {
-                      setCurrentComponentIndex(newComponents.length - 1)
-                      setSelectedComponent(newComponents[newComponents.length - 1])
-                      
-                      // Auto-switch tabs
-                      if (autoTabSwitchEnabled) {
-                        const tabs = ['preview', 'code', 'docs']
-                        const currentTabIndex = tabs.indexOf(activeTab)
-                        const nextTabIndex = (currentTabIndex + 1) % tabs.length
-                        setActiveTab(tabs[nextTabIndex])
-                      }
-                    }
+
+                  // If it's a new component, select it
+                  if (newComponents.length > currentComponentIndex) {
+                    setCurrentComponentIndex(newComponents.length - 1)
+                    setSelectedComponent(newComponents[newComponents.length - 1])
+
+                    // Auto-switch tabs
+                    const tabs = ['preview', 'code', 'docs']
+                    const currentTabIndex = tabs.indexOf(activeTab)
+                    const nextTabIndex = (currentTabIndex + 1) % tabs.length
+                    setActiveTab(tabs[nextTabIndex])
                   }
                 }
 
@@ -354,10 +400,9 @@ export default function ShowcasePage() {
                 if (data.data.components && Array.isArray(data.data.components)) {
                   const finalComponents = data.data.components
                   setComponents(finalComponents)
-                  
+
                   // Select first component and show preview tab
                   if (finalComponents.length > 0) {
-                    setCurrentComponentIndex(0)
                     setSelectedComponent(finalComponents[0])
                     setActiveTab("preview")
                   }
@@ -492,40 +537,7 @@ export default function ShowcasePage() {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          {/* Auto-switch control panel */}
-          {isGenerating && (
-            <div className="flex items-center justify-center gap-4 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="autoSwitch"
-                  checked={autoSwitchEnabled}
-                  onChange={(e) => setAutoSwitchEnabled(e.target.checked)}
-                  className="w-4 h-4 text-blue-600"
-                />
-                <label htmlFor="autoSwitch" className="text-sm font-medium text-blue-700">
-                  Auto-switch components
-                </label>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="autoTabSwitch"
-                  checked={autoTabSwitchEnabled}
-                  onChange={(e) => setAutoTabSwitchEnabled(e.target.checked)}
-                  className="w-4 h-4 text-blue-600"
-                />
-                <label htmlFor="autoTabSwitch" className="text-sm font-medium text-blue-700">
-                  Auto-switch tabs
-                </label>
-              </div>
-              
-              <div className="text-sm text-blue-600">
-                Current component: {currentComponentIndex + 1} / {components.length}
-              </div>
-            </div>
-          )}
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/">
@@ -549,37 +561,25 @@ export default function ShowcasePage() {
               </div>
             </div>
             <div className="flex space-x-2">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.location.href = '/'}
-                  className="rounded-2xl"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Regenerate
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyToClipboard(selectedComponent?.code || '')}
-                  className="rounded-2xl"
-                  disabled={!selectedComponent?.code}
-                >
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy Code
-                </Button>
-              </motion.div>
+
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   size="sm"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-2xl"
-                  disabled={!selectedComponent}
+                  disabled={!components.length || isDownloading}
+                  onClick={downloadAllComponents}
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
+                  {isDownloading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </>
+                  )}
                 </Button>
               </motion.div>
             </div>

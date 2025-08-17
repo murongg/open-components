@@ -123,44 +123,6 @@ export function generatePreviewCodeFromAST(code: string): string {
     previewCode += `  return ${jsxReturn};\n`
     previewCode += `}\n\n`
 
-    // Generate random content
-    const randomContents = [
-      'Click me!',
-      'Submit',
-      'Save',
-      'Cancel',
-      'Confirm',
-      'Delete',
-      'Edit',
-      'View',
-      'Download',
-      'Upload',
-      'Search',
-      'Filter',
-      'Sort',
-      'Refresh',
-      'Next',
-      'Previous',
-      'Finish',
-      'Start',
-      'Stop',
-      'Play',
-      'Pause',
-      'Settings',
-      'Profile',
-      'Dashboard',
-      'Home',
-      'Back',
-      'Forward',
-      'Menu',
-      'Close',
-      'Open'
-    ]
-
-    // Randomly select content
-    const randomContent = randomContents[Math.floor(Math.random() * randomContents.length)]
-    const randomEmoji = ['🚀', '✨', '🎯', '💡', '🔥', '⭐', '🎉', '🎨', '🚀', '💎'][Math.floor(Math.random() * 5)]
-
     // Don't generate render function call - let AI handle that
     // Just return the component definition
     return previewCode
@@ -173,9 +135,7 @@ export function generatePreviewCodeFromAST(code: string): string {
       // Try to extract JSX content
       const jsxMatch = code.match(/(<[^>]*>[\s\S]*<\/[^>]*>|<[^>]*\/>)/)
       if (jsxMatch) {
-        const randomContent = ['Click me!', 'Submit', 'Save', 'Cancel'][Math.floor(Math.random() * 4)]
-        const randomEmoji = ['🚀', '✨', '🎯', '💡'][Math.floor(Math.random() * 4)]
-        
+
         return `function Component() {
   return ${jsxMatch[1]};
 }`

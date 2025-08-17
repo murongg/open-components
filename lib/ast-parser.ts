@@ -63,6 +63,11 @@ export function generatePreviewCodeFromAST(code: string): string {
       // Find arrow functions
       VariableDeclarator(path: any) {
         if (t.isArrowFunctionExpression(path.node.init)) {
+          // Extract the variable name (component name)
+          if (t.isIdentifier(path.node.id)) {
+            componentName = path.node.id.name
+          }
+          
           const arrowFunc = path.node.init
 
           // Extract parameters
@@ -114,13 +119,8 @@ export function generatePreviewCodeFromAST(code: string): string {
       previewCode += `  ${componentBody.join('\n  ')}\n\n`
     }
 
-    // Add render function
-    previewCode += `  const render = () => {\n`
-    previewCode += `    return ${jsxReturn};\n`
-    previewCode += `  };\n\n`
-
-    // Call render function, passing component instance
-    previewCode += `  return render();\n`
+    // Direct return JSX
+    previewCode += `  return ${jsxReturn};\n`
     previewCode += `}\n\n`
 
     // Generate random content
@@ -161,15 +161,8 @@ export function generatePreviewCodeFromAST(code: string): string {
     const randomContent = randomContents[Math.floor(Math.random() * randomContents.length)]
     const randomEmoji = ['🚀', '✨', '🎯', '💡', '🔥', '⭐', '🎉', '🎨', '🚀', '💎'][Math.floor(Math.random() * 5)]
 
-    // Generate different render calls based on component type
-    if (componentProps.some(prop => prop.includes('children'))) {
-      // Components with children, pass random content
-      previewCode += `render(<${componentName}>${randomEmoji} ${randomContent}</${componentName}>)`
-    } else {
-      // Components without children, don't pass content
-      previewCode += `render(<${componentName} />)`
-    }
-
+    // Don't generate render function call - let AI handle that
+    // Just return the component definition
     return previewCode
 
   } catch (error) {
@@ -184,13 +177,8 @@ export function generatePreviewCodeFromAST(code: string): string {
         const randomEmoji = ['🚀', '✨', '🎯', '💡'][Math.floor(Math.random() * 4)]
         
         return `function Component() {
-  const render = () => {
-    return ${jsxMatch[1]};
-  };
-  return render();
-}
-
-render(<Component>${randomEmoji} ${randomContent}</Component>)`
+  return ${jsxMatch[1]};
+}`
       }
     } catch (fallbackError) {
       console.error('Fallback solution also failed:', fallbackError)
@@ -198,12 +186,7 @@ render(<Component>${randomEmoji} ${randomContent}</Component>)`
 
     // Final fallback
     return `function Component() {
-  const render = () => {
-    return <div>Component generated from Babel AST</div>;
-  };
-  return render();
-}
-
-render(<Component>🚀 Click me!</Component>)`
+  return <div>Component generated from Babel AST</div>;
+}`
   }
 }

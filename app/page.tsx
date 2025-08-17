@@ -18,8 +18,8 @@ export default function Home() {
     
     setIsGenerating(true)
     
-    // Navigate to showcase page with prompt parameter
-    router.push(`/showcase?prompt=${encodeURIComponent(prompt)}`)
+    // Navigate to generate page with prompt parameter
+    router.push(`/generate?prompt=${encodeURIComponent(prompt)}`)
   }
 
   return (

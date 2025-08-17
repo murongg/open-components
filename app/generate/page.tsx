@@ -16,7 +16,6 @@ import { LiveProvider, LivePreview, LiveError } from 'react-live'
 
 // Component preview function - using react-live
 const createPreview = (component: Component) => {
-
   if (!component.previewCode || component.previewCode.trim() === '') {
     console.warn('⚠️ previewCode is empty or undefined')
     return (
@@ -213,7 +212,7 @@ function MarkdownRenderer({ content }: { content: string }) {
   )
 }
 
-export default function ShowcasePage() {
+export default function GeneratePage() {
   const searchParams = useSearchParams()
   const [components, setComponents] = useState<Component[]>([])
   const [selectedComponent, setSelectedComponent] = useState<Component | null>(null)
@@ -556,7 +555,7 @@ export default function ShowcasePage() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </motion.div>
                 <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
-                  Component Showcase
+                  Component Generator
                 </h1>
               </div>
             </div>

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, Code, Eye, Copy, Download, Sparkles } from "lucide-react"
+import { Code, Eye, Copy, Download, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Component } from "@/types/component"
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
@@ -535,30 +535,20 @@ export default function GeneratePage() {
 
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="px-6 py-4">
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="ghost" size="sm" className="rounded-2xl">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Generator
-                  </Button>
-                </motion.div>
-              </Link>
-              <div className="flex items-center space-x-2">
-                <motion.div
-                  className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  <Sparkles className="w-5 h-5 text-white" />
-                </motion.div>
-                <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
-                  Component Generator
-                </h1>
-              </div>
-            </div>
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <motion.div
+                className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+              >
+                <Sparkles className="w-5 h-5 text-white" />
+              </motion.div>
+              <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
+                Component Generator
+              </h1>
+            </Link>
             <div className="flex space-x-2">
 
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>

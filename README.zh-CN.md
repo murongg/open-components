@@ -66,3 +66,6 @@ MIT许可证 - 查看[LICENSE](LICENSE)文件。
 
 ---
 
+## Preview
+
+<video src="./assets/video.mp4" controls />

@@ -66,3 +66,6 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
+## Preview
+
+<video src="./assets/video.mp4" controls />

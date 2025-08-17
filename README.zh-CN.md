@@ -66,6 +66,7 @@ MIT许可证 - 查看[LICENSE](LICENSE)文件。
 
 ---
 
+
 ## Preview
 
-<video src="https://github.com/murongg/open-components/raw/refs/heads/main/assets/video.mp4" controls />
+![Preview](./assets/preview.gif)

@@ -40,7 +40,7 @@ const createPreview = (component: Component) => {
     >
       <div className="h-full flex flex-col">
         {/* Preview Content */}
-        <div className="flex-1 p-6 bg-gray-50 flex items-center justify-center">
+        <div className="flex-1 p-6 flex items-center justify-center">
           <div className="w-full max-w-md">
             <LivePreview />
           </div>

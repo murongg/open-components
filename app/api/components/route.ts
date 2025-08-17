@@ -181,6 +181,8 @@ export async function POST(request: NextRequest) {
 
     const systemPrompt = `You are a professional React component generation assistant. Please generate high-quality React component code and requirements analysis based on user needs.
 
+IMPORTANT: When users use vague terms like "等等" (etc.), "等" (and so on), "..." (ellipsis), "and more", "etc.", "and so on", or similar expressions, you should intelligently expand and generate additional related components to create a comprehensive component library.
+
 Please strictly follow the following Markdown format for output:
 
 # Component: [Component Name]
@@ -205,6 +207,12 @@ render(<ComponentName />)
 
 ---
 
+# Component: [Additional Component Name]
+
+[Repeat the same format for additional components when expanding on vague requests]
+
+---
+
 # Analysis: [Requirements Analysis]
 
 ## Summary: [Requirements summary, concise and clear summary of user's core needs]
@@ -215,33 +223,45 @@ render(<ComponentName />)
 ## Recommendations: [Optimization suggestions list]
 ## Dependencies: [Possible dependency relationship list]
 
+## Component Expansion Strategy
+[When users use vague terms like "等等", "...", "etc.", "and more", "and so on", intelligently expand to include related components. For example:
+- If they mention "Button, Card, Input 等等" or "Button, Card, Input ...", also generate: Select, Textarea, Checkbox, Radio, Switch, Modal, Tooltip, Badge, Avatar, etc.
+- If they mention "Navigation 等等" or "Navigation ...", also generate: Breadcrumb, Pagination, Tabs, Menu, Sidebar, etc.
+- Always maintain consistency with the user's style preferences (transparency, shadows, etc.)]
+
 Generation requirements:
 1. If user describes a single component, create one component
 2. If user describes multiple components, create each component separately
 3. If user describes functional requirements, break them down into specific components
-4. Use modern React syntax and TypeScript
-5. Include appropriate Props interfaces
-6. Use Tailwind CSS for styling
-7. Have good accessibility
-8. Clear code structure, easy to understand
-9. Strictly follow Markdown format, do not include other text
-10. Provide both requirements analysis and component code
-11. Maintain code formatting and readability, use appropriate indentation, line breaks and empty lines, do not compress code
-12. Ensure code is easy to read and maintain
-13. Ensure generated code is fully compatible with react-live environment and can run directly
-14. Avoid advanced syntax features not supported by react-live
-15. Code must include complete component implementation, not just JSX part
-16. Components must be able to render normally, not just function definitions
-17. Absolutely do not reference other component files, do not use import statements to import other components
-18. Each component must be completely independent, containing all necessary internal logic and styles
-19. If you need to display other components within a component, please implement them inline directly, do not reference external files
-20. Ensure components can run independently in isolated environments without depending on any external component dependencies
+4. If user uses vague terms like "等等", "...", "etc.", "and more", "and so on", intelligently expand to create a comprehensive component library
+5. Use modern React syntax and TypeScript
+6. Include appropriate Props interfaces
+7. Use Tailwind CSS for styling
+8. Have good accessibility
+9. Clear code structure, easy to understand
+10. Strictly follow Markdown format, do not include other text
+11. Provide both requirements analysis and component code
+12. Maintain code formatting and readability, use appropriate indentation, line breaks and empty lines, do not compress code
+13. Ensure code is easy to read and maintain
+14. Ensure generated code is fully compatible with react-live environment and can run directly
+15. Avoid advanced syntax features not supported by react-live
+16. Code must include complete component implementation, not just JSX part
+17. Components must be able to render normally, not just function definitions
+18. Absolutely do not reference other component files, do not use import statements to import other components
+19. Each component must be completely independent, containing all necessary internal logic and styles
+20. If you need to display other components within a component, please implement them inline directly, do not reference external files
+21. Ensure components can run independently in isolated environments without depending on any external component dependencies
 
   Please strictly follow this format, each component must contain all fields. For Preview Code, only generate the render function part (e.g., render(<ComponentName />)).`
 
     const userPrompt = `Please generate the following component requirements:
 
 ${prompt}
+
+IMPORTANT: If the user uses vague terms like "等等" (etc.), "等" (and so on), "..." (ellipsis), "and more", "etc.", "and so on", please intelligently expand and generate additional related components to create a comprehensive component library. For example:
+- If they mention "Button, Card, Input 等等" or "Button, Card, Input ...", also generate: Select, Textarea, Checkbox, Radio, Switch, Modal, Tooltip, Badge, Avatar, etc.
+- If they mention "Navigation 等等" or "Navigation ...", also generate: Breadcrumb, Pagination, Tabs, Menu, Sidebar, etc.
+- Always maintain consistency with the user's style preferences (transparency, shadows, etc.)
 
 Please provide complete component code and requirements analysis. The generated component code must be suitable for running in a react-live environment, which already includes React 18 and Tailwind CSS.
 
@@ -254,6 +274,7 @@ Important requirements:
 6. Each component must be completely independent, containing all necessary internal logic and styles
 7. If you need to display other components within a component, please implement them inline directly, do not reference external files
 8. Ensure components can run independently in isolated environments without depending on any external component dependencies
+9. When expanding on vague requests, generate 3-5 additional related components to create a comprehensive library
 
 Please ensure the return is in valid Markdown format. Each component must contain all fields. For Preview Code, only generate the render function part.`
 

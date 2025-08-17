@@ -5,5 +5,5 @@ export interface Component {
   description: string
   documentation: string
   code: string
-  previewCode: string
+  previewCodes: string[]
 }

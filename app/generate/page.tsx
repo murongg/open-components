@@ -15,30 +15,55 @@ import { Component } from "@/types/component"
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
 
 // Component preview function - using react-live
-const createPreview = (component: Component) => {
-  if (!component.previewCode || component.previewCode.trim() === '') {
-    console.warn('⚠️ previewCode is empty or undefined')
+const createPreview = (component: Component, selectedExampleIndex: number, onExampleChange: (index: number) => void) => {
+  if (!component.previewCodes || component.previewCodes.length === 0) {
+    console.warn('⚠️ previewCodes is empty or undefined')
     return (
       <div className="text-center p-8 text-yellow-600">
         <div className="text-lg mb-2">⚠️ Component code is empty</div>
         <div className="text-sm text-muted-foreground">
-          This component has no preview code
+          This component has no preview codes
         </div>
         <div className="text-xs mt-4 bg-yellow-50 p-2 rounded text-left">
           <div><strong>Component Name:</strong> {component.name}</div>
-          <div><strong>previewCode:</strong> {component.previewCode || 'undefined'}</div>
+          <div><strong>previewCodes:</strong> {component.previewCodes?.length || 0} examples</div>
         </div>
       </div>
     )
   }
 
+  // Use the selected previewCode
+  const currentPreviewCode = component.previewCodes[selectedExampleIndex]
+
   return (
     <LiveProvider
-      code={component.previewCode}
+      code={currentPreviewCode}
       noInline={true}
     // scope={{ React }}
     >
       <div className="h-full flex flex-col">
+        {/* Preview Selector */}
+        {component.previewCodes.length > 1 && (
+          <div className="border-b border-border p-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-muted-foreground">Examples:</span>
+              {component.previewCodes.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => onExampleChange(index)}
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                    index === selectedExampleIndex
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Example {index + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Preview Content */}
         <div className="flex-1 p-6 flex items-center justify-center">
           <div className="w-full max-w-md">
@@ -220,9 +245,15 @@ export default function GeneratePage() {
   const [error, setError] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [activeTab, setActiveTab] = useState("preview")
+  const [selectedExampleIndex, setSelectedExampleIndex] = useState<number>(0)
 
   // New: Component order tracking and auto-switching
   const [currentComponentIndex, setCurrentComponentIndex] = useState(0)
+
+  // Reset example index when component changes
+  useEffect(() => {
+    setSelectedExampleIndex(0)
+  }, [selectedComponent])
 
   // Get prompt parameter from URL and auto-generate components
   useEffect(() => {
@@ -240,6 +271,12 @@ export default function GeneratePage() {
       return false
     }
     const value = selectedComponent[fieldName as keyof Component]
+    
+    // Handle different field types
+    if (fieldName === 'previewCodes') {
+      return value && Array.isArray(value) && value.length > 0
+    }
+    
     const isReady = value && (typeof value === 'string' ? value.trim().length > 0 : true)
 
     return isReady
@@ -718,8 +755,8 @@ export default function GeneratePage() {
                       <div className="h-full p-6">
                         <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 shadow-lg">
                           <CardContent className="h-full p-0">
-                            {isFieldReady('previewCode') ? (
-                              createPreview(selectedComponent)
+                            {isFieldReady('previewCodes') ? (
+                              createPreview(selectedComponent, selectedExampleIndex, setSelectedExampleIndex)
                             ) : (
                               <div className="h-full flex items-center justify-center">
                                 <GeneratingState fieldName="Preview" />

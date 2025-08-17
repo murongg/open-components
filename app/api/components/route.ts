@@ -48,47 +48,59 @@ function parseMarkdownResponse(markdown: string) {
             }
           }
           
-          // Extract Preview Code field (AI generates render function)
-          const previewCodeStart = trimmedSection.indexOf('## Preview Code:')
+          // Extract Preview Codes field (AI generates multiple render examples)
+          const previewCodesStart = trimmedSection.indexOf('## Preview Codes:')
           
-          if (previewCodeStart !== -1) {
-            const previewCodeSection = trimmedSection.substring(previewCodeStart)
-            const previewCodeBlockMatch = previewCodeSection.match(/```(?:tsx|ts|jsx|js)?\s*([\s\S]*?)```/)
-            if (previewCodeBlockMatch) {
-              let aiRenderFunction = previewCodeBlockMatch[1].trim()
+          if (previewCodesStart !== -1) {
+            const previewCodesSection = trimmedSection.substring(previewCodesStart)
+            // Find all code blocks in the preview codes section
+            const previewCodeBlocks = previewCodesSection.match(/```(?:tsx|ts|jsx|js)?\s*([\s\S]*?)```/g)
+            
+            if (previewCodeBlocks && previewCodeBlocks.length > 0) {
+              const previewCodes: string[] = []
               
-              // Clean up AI's render function - remove any component definitions and keep only render calls
-              aiRenderFunction = aiRenderFunction
-                .split('\n')
-                .filter(line => line.trim().startsWith('render(') || line.trim().startsWith('//'))
-                .join('\n')
-              
-              // Use AST to generate component definition + cleaned AI render function
-              if (component.code && component.name) {
-                try {
-                  const { generatePreviewCodeFromAST } = require('@/lib/ast-parser')
-                  const componentDefinition = generatePreviewCodeFromAST(component.code)
+              for (const codeBlock of previewCodeBlocks) {
+                const codeMatch = codeBlock.match(/```(?:tsx|ts|jsx|js)?\s*([\s\S]*?)```/)
+                if (codeMatch) {
+                  let aiRenderFunction = codeMatch[1].trim()
                   
-                  // Combine: component definition from AST + cleaned render function from AI
-                  component.previewCode = componentDefinition + '\n\n' + aiRenderFunction
-                } catch (error) {
-                  console.error('❌ AST parsing failed:', error)
-                  // Fallback: use cleaned AI render function with simple component
-                  component.previewCode = `const ${component.name} = () => <div>Component</div>\n\n${aiRenderFunction}`
+                  // Clean up AI's render function - remove any component definitions and keep only render calls
+                  aiRenderFunction = aiRenderFunction
+                    .split('\n')
+                    .filter(line => line.trim().startsWith('render(') || line.trim().startsWith('//'))
+                    .join('\n')
+                  
+                  // Use AST to generate component definition + cleaned AI render function
+                  if (component.code && component.name) {
+                    try {
+                      const { generatePreviewCodeFromAST } = require('@/lib/ast-parser')
+                      const componentDefinition = generatePreviewCodeFromAST(component.code)
+                      
+                      // Combine: component definition from AST + cleaned render function from AI
+                      previewCodes.push(componentDefinition + '\n\n' + aiRenderFunction)
+                    } catch (error) {
+                      console.error('❌ AST parsing failed:', error)
+                      // Fallback: use cleaned AI render function with simple component
+                      previewCodes.push(`const ${component.name} = () => <div>Component</div>\n\n${aiRenderFunction}`)
+                    }
+                  }
                 }
               }
+              
+              component.previewCodes = previewCodes
             }
           }
           
-          // Fallback: if no previewCode is provided, generate complete previewCode using AST
-          if (!component.previewCode && component.code && component.name) {
+          // Fallback: if no previewCodes are provided, generate one previewCode using AST
+          if (!component.previewCodes && component.code && component.name) {
             try {
               const { generatePreviewCodeFromAST } = require('@/lib/ast-parser')
-              component.previewCode = generatePreviewCodeFromAST(component.code)
+              const componentDefinition = generatePreviewCodeFromAST(component.code)
+              component.previewCodes = [componentDefinition + '\n\nrender(<' + component.name + ' />)']
             } catch (error) {
               console.error('❌ AST parsing failed:', error)
               // Final fallback
-              component.previewCode = `const ${component.name} = () => <div>Component</div>\n\nrender(<${component.name} />)`
+              component.previewCodes = [`const ${component.name} = () => <div>Component</div>\n\nrender(<${component.name} />)`]
             }
           }
           
@@ -192,17 +204,37 @@ Please strictly follow the following Markdown format for output:
 ## Category: [Component category, such as: Buttons, Cards, Forms, Navigation, etc.]
 ## Description: [Component brief description]
 ## Documentation: [Component detailed documentation, Markdown format, including features, usage, Props, etc.]
-## Code: [Complete component code, using modern React syntax and TypeScript, maintain code formatting and readability, do not compress]
+## Code: [Complete component code, using modern React syntax and TypeScript, maintain code formatting and readability, do not compress. IMPORTANT: Include comprehensive props with various types (string, number, boolean, function, ReactNode, etc.) and provide detailed TypeScript interfaces. Each component should have at least 8-12 different props to showcase flexibility and reusability. CRITICAL: Do NOT reference other components like Button, Icon, etc. Use only basic HTML elements with Tailwind CSS styling.]
 
 \`\`\`tsx
-// Complete component code
+// Complete component code with rich props
 \`\`\`
 
-## Preview Code: [Only generate the render function part, format: render(<ComponentName />) or render(<ComponentName>content</ComponentName>). The component definition will be automatically generated by the system.]
+## Preview Codes: [Generate multiple render examples to showcase different component variants and usage scenarios. Each example should demonstrate different prop combinations and values. The component definition will be automatically generated by the system. Generate at least 5-8 examples with diverse prop combinations. IMPORTANT: For children content, use only simple text, emojis, or basic HTML elements, never reference other React components.]
 
 \`\`\`tsx
-// Only the render function part
+// Example 1: Basic usage with minimal props
 render(<ComponentName />)
+\`\`\`
+
+\`\`\`tsx
+// Example 2: Primary variant with size and disabled state
+render(<ComponentName variant="primary" size="large" disabled={true} />)
+\`\`\`
+
+\`\`\`tsx
+// Example 3: Secondary variant with custom styling and events
+render(<ComponentName variant="secondary" size="medium" className="custom-class" onClick={() => alert('clicked')} />)
+\`\`\`
+
+\`\`\`tsx
+// Example 4: With children and complex props
+render(<ComponentName variant="outline" size="small" loading={true} icon="star" badge="new">🚀 Click me! ✨</ComponentName>)
+\`\`\`
+
+\`\`\`tsx
+// Example 5: Advanced usage with all major props
+render(<ComponentName variant="ghost" size="xl" disabled={false} loading={false} icon="arrow-right" badge="hot" className="w-full" style={{fontWeight: 'bold'}} onClick={() => console.log('advanced')} onMouseEnter={() => console.log('hover')} />)
 \`\`\`
 
 ---
@@ -235,22 +267,26 @@ Generation requirements:
 3. If user describes functional requirements, break them down into specific components
 4. If user uses vague terms like "等等", "...", "etc.", "and more", "and so on", intelligently expand to create a comprehensive component library
 5. Use modern React syntax and TypeScript
-6. Include appropriate Props interfaces
-7. Use Tailwind CSS for styling
-8. Have good accessibility
-9. Clear code structure, easy to understand
-10. Strictly follow Markdown format, do not include other text
-11. Provide both requirements analysis and component code
-12. Maintain code formatting and readability, use appropriate indentation, line breaks and empty lines, do not compress code
-13. Ensure code is easy to read and maintain
-14. Ensure generated code is fully compatible with react-live environment and can run directly
-15. Avoid advanced syntax features not supported by react-live
-16. Code must include complete component implementation, not just JSX part
-17. Components must be able to render normally, not just function definitions
-18. Absolutely do not reference other component files, do not use import statements to import other components
-19. Each component must be completely independent, containing all necessary internal logic and styles
-20. If you need to display other components within a component, please implement them inline directly, do not reference external files
-21. Ensure components can run independently in isolated environments without depending on any external component dependencies
+6. Include comprehensive Props interfaces with at least 8-12 different props covering various types (string, number, boolean, function, ReactNode, etc.)
+7. Props should include: variant, size, disabled, loading, icon, badge, className, style, onClick, onMouseEnter, children, etc.
+8. Use Tailwind CSS for styling with dynamic classes based on props
+9. Have good accessibility with proper ARIA attributes
+10. Clear code structure, easy to understand
+11. Strictly follow Markdown format, do not include other text
+12. Provide both requirements analysis and component code
+13. Maintain code formatting and readability, use appropriate indentation, line breaks and empty lines, do not compress code
+14. Ensure code is easy to read and maintain
+15. Ensure generated code is fully compatible with react-live environment and can run directly
+16. Avoid advanced syntax features not supported by react-live
+17. Code must include complete component implementation, not just JSX part
+18. Components must be able to render normally, not just function definitions
+19. Absolutely do not reference other component files, do not use import statements to import other components
+20. Each component must be completely independent, containing all necessary internal logic and styles
+21. ABSOLUTELY NO component references: Do NOT use other components like Button, Icon, etc. within any component. If you need to show interactive elements, use basic HTML elements (button, div, span, etc.) with Tailwind CSS styling
+22. If you need to display other components within a component, please implement them inline directly, do not reference external files
+23. Ensure components can run independently in isolated environments without depending on any external component dependencies
+24. For children content, use simple text, emojis, or basic HTML elements, never reference other React components
+25. Preview examples should showcase different prop combinations to demonstrate component flexibility
 
   Please strictly follow this format, each component must contain all fields. For Preview Code, only generate the render function part (e.g., render(<ComponentName />)).`
 
@@ -263,6 +299,15 @@ IMPORTANT: If the user uses vague terms like "等等" (etc.), "等" (and so on),
 - If they mention "Navigation 等等" or "Navigation ...", also generate: Breadcrumb, Pagination, Tabs, Menu, Sidebar, etc.
 - Always maintain consistency with the user's style preferences (transparency, shadows, etc.)
 
+CRITICAL: Each component must have comprehensive props (at least 8-12 different props) including:
+- Variant props (primary, secondary, outline, ghost, etc.)
+- Size props (xs, sm, md, lg, xl, etc.)
+- State props (disabled, loading, active, etc.)
+- Style props (className, style, color, etc.)
+- Event props (onClick, onMouseEnter, onChange, etc.)
+- Content props (icon, badge, children, etc.)
+- Accessibility props (aria-label, role, etc.)
+
 Please provide complete component code and requirements analysis. The generated component code must be suitable for running in a react-live environment, which already includes React 18 and Tailwind CSS.
 
 Important requirements:
@@ -272,11 +317,15 @@ Important requirements:
 4. Most importantly, code must include complete component implementation to ensure the component can render normally
 5. Absolutely do not reference other component files, do not use import statements to import other components
 6. Each component must be completely independent, containing all necessary internal logic and styles
-7. If you need to display other components within a component, please implement them inline directly, do not reference external files
-8. Ensure components can run independently in isolated environments without depending on any external component dependencies
+7. ABSOLUTELY NO component references: Do NOT use other components like Button, Icon, etc. within any component. If you need to show interactive elements, use basic HTML elements (button, div, span, etc.) with Tailwind CSS styling
+8. If you need to display other components within a component, please implement them inline directly, do not reference external files
+9. Ensure components can run independently in isolated environments without depending on any external component dependencies
+10. For children content, use simple text, emojis, or basic HTML elements, never reference other React components
 9. When expanding on vague requests, generate 3-5 additional related components to create a comprehensive library
+10. Each component must have rich, comprehensive props (8-12+ props) to demonstrate flexibility and reusability
+11. Preview examples must showcase different prop combinations to highlight component capabilities
 
-Please ensure the return is in valid Markdown format. Each component must contain all fields. For Preview Code, only generate the render function part.`
+Please ensure the return is in valid Markdown format. Each component must contain all fields. For Preview Codes, generate multiple render examples to showcase different component variants and usage scenarios with diverse prop combinations.`
 
     console.log('🤖 Starting OpenAI API call...')
 

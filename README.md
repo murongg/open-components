@@ -68,4 +68,4 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## Preview
 
-<video src="./assets/video.mp4" controls />
+<video src="https://github.com/murongg/open-components/raw/refs/heads/main/assets/video.mp4" controls />

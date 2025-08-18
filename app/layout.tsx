@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Montserrat } from "next/font/google"
 import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${montserrat.variable}`}>
+    <html lang="en" className={`${montserrat.variable}`} suppressHydrationWarning>
       <head>
         {/* Tailwind CSS CDN */}
         <script src="https://cdn.tailwindcss.com"></script>
@@ -32,6 +33,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               tailwind.config = {
+                darkMode: 'class',
                 theme: {
                   extend: {
                     colors: {
@@ -93,7 +95,16 @@ html {
 }
         `}</style>
       </head>
-      <body>{children}</body>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

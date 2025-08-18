@@ -13,18 +13,19 @@ import { Code, Eye, Copy, Download, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Component } from "@/types/component"
 import { LiveProvider, LivePreview, LiveError } from 'react-live'
+import { ThemeToggle } from "@/components/theme-toggle"
 
 // Component preview function - using react-live
 const createPreview = (component: Component, selectedExampleIndex: number, onExampleChange: (index: number) => void) => {
   if (!component.previewCodes || component.previewCodes.length === 0) {
     console.warn('⚠️ previewCodes is empty or undefined')
     return (
-      <div className="text-center p-8 text-yellow-600">
+      <div className="text-center p-8 text-yellow-600 dark:text-yellow-400">
         <div className="text-lg mb-2">⚠️ Component code is empty</div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground dark:text-gray-300">
           This component has no preview codes
         </div>
-        <div className="text-xs mt-4 bg-yellow-50 p-2 rounded text-left">
+        <div className="text-xs mt-4 bg-yellow-50 dark:bg-yellow-950/50 p-2 rounded text-left border border-yellow-200 dark:border-yellow-800">
           <div><strong>Component Name:</strong> {component.name}</div>
           <div><strong>previewCodes:</strong> {component.previewCodes?.length || 0} examples</div>
         </div>
@@ -44,9 +45,9 @@ const createPreview = (component: Component, selectedExampleIndex: number, onExa
       <div className="h-full flex flex-col">
         {/* Preview Selector */}
         {component.previewCodes.length > 1 && (
-          <div className="border-b border-border p-4">
+          <div className="border-b border-border dark:border-gray-600 p-4">
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-muted-foreground">Examples:</span>
+              <span className="text-sm font-medium text-muted-foreground dark:text-gray-300">Examples:</span>
               {component.previewCodes.map((_, index) => (
                 <button
                   key={index}
@@ -54,7 +55,7 @@ const createPreview = (component: Component, selectedExampleIndex: number, onExa
                   className={`px-3 py-1 text-xs rounded-md transition-colors ${
                     index === selectedExampleIndex
                       ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80 dark:bg-gray-700 dark:hover:bg-gray-600'
                   }`}
                 >
                   Example {index + 1}
@@ -72,8 +73,8 @@ const createPreview = (component: Component, selectedExampleIndex: number, onExa
         </div>
 
         {/* Error Display */}
-        <div className="border-t border-border">
-          <LiveError className="p-4 text-red-600 bg-red-50 text-sm" />
+        <div className="border-t border-border dark:border-gray-600">
+          <LiveError className="p-4 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/50 text-sm" />
         </div>
       </div>
     </LiveProvider>
@@ -84,11 +85,11 @@ const createPreview = (component: Component, selectedExampleIndex: number, onExa
 function CodeBlock({ code, language = "tsx" }: { code: string; language?: string }) {
   return (
     <div className="relative">
-      <pre className="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-sm leading-relaxed">
+      <pre className="bg-slate-900 dark:bg-slate-950 text-slate-100 p-4 rounded-xl overflow-x-auto text-sm leading-relaxed border border-slate-700 dark:border-slate-800">
         <code className="language-tsx">
           {code.split("\n").map((line, index) => (
             <div key={index} className="table-row">
-              <span className="table-cell text-slate-500 pr-4 select-none text-right w-8">{index + 1}</span>
+              <span className="table-cell text-slate-500 dark:text-slate-400 pr-4 select-none text-right w-8">{index + 1}</span>
               <span className="table-cell">
                 {line
                   .split(
@@ -112,7 +113,7 @@ function CodeBlock({ code, language = "tsx" }: { code: string; language?: string
                       ].includes(part)
                     ) {
                       return (
-                        <span key={i} className="text-purple-400 font-semibold">
+                        <span key={i} className="text-purple-400 dark:text-purple-300 font-semibold">
                           {part}
                         </span>
                       )
@@ -120,7 +121,7 @@ function CodeBlock({ code, language = "tsx" }: { code: string; language?: string
                     return part.split(/(".*?"|'.*?'|`.*?`)/).map((subpart, j) => {
                       if (subpart.match(/^["'`].*["'`]$/)) {
                         return (
-                          <span key={j} className="text-green-400">
+                          <span key={j} className="text-green-400 dark:text-green-300">
                             {subpart}
                           </span>
                         )
@@ -128,12 +129,12 @@ function CodeBlock({ code, language = "tsx" }: { code: string; language?: string
                       return subpart.split(/(\/\/.*$|\/\*[\s\S]*?\*\/)/).map((comment, k) => {
                         if (comment.match(/^\/\/|^\/\*/)) {
                           return (
-                            <span key={k} className="text-slate-500 italic">
+                            <span key={k} className="text-slate-500 dark:text-slate-400 italic">
                               {comment}
                             </span>
                           )
                         }
-                        return <span key={k}>{comment}</span>
+                        return <span key={k}>{subpart}</span>
                       })
                     })
                   })}
@@ -153,21 +154,21 @@ function MarkdownRenderer({ content }: { content: string }) {
       // Headers
       if (line.startsWith("# ")) {
         return (
-          <h1 key={index} className="text-2xl font-bold mt-6 mb-4 text-foreground">
+          <h1 key={index} className="text-2xl font-bold mt-6 mb-4 text-foreground dark:text-white">
             {line.slice(2)}
           </h1>
         )
       }
       if (line.startsWith("## ")) {
         return (
-          <h2 key={index} className="text-xl font-semibold mt-5 mb-3 text-foreground">
+          <h2 key={index} className="text-xl font-semibold mt-5 mb-3 text-foreground dark:text-white">
             {line.slice(3)}
           </h2>
         )
       }
       if (line.startsWith("### ")) {
         return (
-          <h3 key={index} className="text-lg font-medium mt-4 mb-2 text-foreground">
+          <h3 key={index} className="text-lg font-medium mt-4 mb-2 text-foreground dark:text-white">
             {line.slice(4)}
           </h3>
         )
@@ -181,7 +182,7 @@ function MarkdownRenderer({ content }: { content: string }) {
       // Lists
       if (line.startsWith("- ")) {
         return (
-          <li key={index} className="ml-4 mb-1 text-muted-foreground">
+          <li key={index} className="ml-4 mb-1 text-muted-foreground dark:text-gray-300">
             {line.slice(2)}
           </li>
         )
@@ -192,10 +193,10 @@ function MarkdownRenderer({ content }: { content: string }) {
       if (codeRegex.test(line)) {
         const parts = line.split(codeRegex)
         return (
-          <p key={index} className="mb-2 text-muted-foreground">
+          <p key={index} className="mb-2 text-muted-foreground dark:text-gray-300">
             {parts.map((part, i) =>
               i % 2 === 1 ? (
-                <code key={i} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
+                <code key={i} className="bg-muted dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-foreground dark:text-gray-200">
                   {part}
                 </code>
               ) : (
@@ -209,7 +210,7 @@ function MarkdownRenderer({ content }: { content: string }) {
       // Regular paragraphs
       if (line.trim()) {
         return (
-          <p key={index} className="mb-2 text-muted-foreground">
+          <p key={index} className="mb-2 text-muted-foreground dark:text-gray-300">
             {line}
           </p>
         )
@@ -286,9 +287,9 @@ function GeneratePageContent() {
   const GeneratingState = ({ fieldName }: { fieldName: string }) => (
     <div className="h-full flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-muted-foreground text-sm">Generating {fieldName}...</p>
-        <p className="text-xs text-muted-foreground mt-2">Please wait while the content is being processed</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary dark:border-blue-400 mx-auto mb-4"></div>
+        <p className="text-muted-foreground dark:text-gray-300 text-sm">Generating {fieldName}...</p>
+        <p className="text-xs text-muted-foreground dark:text-gray-400 mt-2">Please wait while the content is being processed</p>
       </div>
     </div>
   )
@@ -476,7 +477,7 @@ function GeneratePageContent() {
   // If no components, show loading state or empty state
   if (components.length === 0) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="relative min-h-screen overflow-hidden bg-background dark:bg-gray-900">
         <motion.div
           className="absolute inset-0 -z-10 opacity-20"
           animate={{
@@ -494,19 +495,19 @@ function GeneratePageContent() {
           <div className="text-center">
             {isGenerating ? (
               <>
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-6"></div>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Generating components...</h2>
-                <p className="text-muted-foreground mb-6 max-w-md">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary dark:border-blue-400 mx-auto mb-6"></div>
+                <h2 className="text-2xl font-bold text-foreground dark:text-white mb-4">Generating components...</h2>
+                <p className="text-muted-foreground dark:text-gray-300 mb-6 max-w-md">
                   AI is generating components based on your requirements, please wait
                 </p>
               </>
             ) : (
               <>
-                <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
                   <Sparkles className="w-16 h-16 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-foreground mb-4">Welcome to AI Component Generator</h2>
-                <p className="text-muted-foreground mb-6 max-w-md">
+                <h2 className="text-2xl font-bold text-foreground dark:text-white mb-4">Welcome to AI Component Generator</h2>
+                <p className="text-muted-foreground dark:text-gray-300 mb-6 max-w-md">
                   Describe the components you need, AI will generate a complete component library with code, documentation and preview
                 </p>
                 <Button
@@ -527,21 +528,21 @@ function GeneratePageContent() {
   // Ensure selectedComponent is not null
   if (!selectedComponent) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading components...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary dark:border-blue-400 mx-auto mb-4"></div>
+          <p className="text-muted-foreground dark:text-gray-300">Loading components...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen overflow-hidden bg-background dark:bg-gray-900">
 
       {/* Display error message */}
       {error && (
-        <div className="fixed top-4 left-4 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm z-50 max-w-xs">
+        <div className="fixed top-4 left-4 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-2 rounded-lg text-sm z-50 max-w-xs backdrop-blur-sm">
           <div className="font-medium mb-1">❌ Error</div>
           <div className="text-xs">{error}</div>
           <Button
@@ -571,7 +572,7 @@ function GeneratePageContent() {
       />
 
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
+      <header className="border-b border-border dark:border-gray-600 bg-card/50 dark:bg-gray-800/50 backdrop-blur-sm">
         <div className="px-6 py-4">
 
           <div className="flex items-center justify-between">
@@ -582,12 +583,13 @@ function GeneratePageContent() {
               >
                 <Sparkles className="w-5 h-5 text-white" />
               </motion.div>
-              <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
+              <h1 className="text-xl font-bold text-foreground dark:text-white" style={{ fontFamily: "var(--font-heading)" }}>
                 Component Generator
               </h1>
             </Link>
             <div className="flex space-x-2">
-
+              <ThemeToggle />
+              
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   size="sm"
@@ -617,16 +619,16 @@ function GeneratePageContent() {
 
       <div className="flex h-[calc(100vh-73px)]">
         {/* Left Sidebar - Component List */}
-        <div className="w-80 border-r border-border bg-card/30 backdrop-blur-sm rounded-r-3xl">
+        <div className="w-80 border-r border-border dark:border-gray-600 bg-card/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-r-3xl">
           <div className="p-4">
-            <h2 className="text-lg font-semibold text-foreground mb-4" style={{ fontFamily: "var(--font-heading)" }}>
+            <h2 className="text-lg font-semibold text-foreground dark:text-white mb-4" style={{ fontFamily: "var(--font-heading)" }}>
               Components
             </h2>
             <ScrollArea className="h-[calc(100vh-140px)]">
               <div className="space-y-4">
                 {categories.map((category) => (
                   <div key={category}>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2 uppercase tracking-wide">
+                    <h3 className="text-sm font-medium text-muted-foreground dark:text-gray-400 mb-2 uppercase tracking-wide">
                       {category}
                     </h3>
                     <div className="space-y-1">
@@ -637,15 +639,15 @@ function GeneratePageContent() {
                             key={component.id}
                             onClick={() => setSelectedComponent(component)}
                             className={cn(
-                              "w-full text-left p-3 rounded-2xl transition-all duration-200 hover:bg-accent/50",
+                              "w-full text-left p-3 rounded-2xl transition-all duration-200 hover:bg-accent/50 dark:hover:bg-gray-700/50",
                               selectedComponent?.id === component.id &&
-                              "bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-accent-foreground border border-primary/20",
+                              "bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-accent-foreground border border-primary/20 dark:border-primary/30",
                             )}
                             whileHover={{ scale: 1.02, x: 4 }}
                             whileTap={{ scale: 0.98 }}
                           >
-                            <div className="font-medium text-sm">{component.name}</div>
-                            <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            <div className="font-medium text-sm text-foreground dark:text-white">{component.name}</div>
+                            <div className="text-xs text-muted-foreground dark:text-gray-400 mt-1 line-clamp-2">
                               {component.description}
                             </div>
                           </motion.button>
@@ -661,17 +663,17 @@ function GeneratePageContent() {
         {/* Right Content - Component Details */}
         <div className="flex-1 flex flex-col">
           {/* Component Header */}
-          <div className="border-b border-border p-6">
+          <div className="border-b border-border dark:border-gray-600 p-6">
             <div className="flex items-center justify-between">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <h1 className="text-2xl font-bold text-foreground mb-2" style={{ fontFamily: "var(--font-heading)" }}>
+                <h1 className="text-2xl font-bold text-foreground dark:text-white mb-2" style={{ fontFamily: "var(--font-heading)" }}>
                   {selectedComponent?.name || 'Select a Component'}
                 </h1>
-                <p className="text-muted-foreground">{selectedComponent?.description || 'Choose a component from the sidebar to view its details'}</p>
+                <p className="text-muted-foreground dark:text-gray-300">{selectedComponent?.description || 'Choose a component from the sidebar to view its details'}</p>
               </motion.div>
               {selectedComponent && (
                 <Badge variant="secondary" className="rounded-2xl">
@@ -686,10 +688,10 @@ function GeneratePageContent() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                className="mt-4 p-4 bg-muted/30 rounded-2xl border border-border/50"
+                className="mt-4 p-4 bg-muted/30 dark:bg-gray-700/30 rounded-2xl border border-border/50 dark:border-gray-600/50"
               >
-                <h3 className="text-sm font-medium text-foreground mb-2">📊 AI Requirements Analysis</h3>
-                <div className="text-xs text-muted-foreground space-y-1">
+                <h3 className="text-sm font-medium text-foreground dark:text-white mb-2">📊 AI Requirements Analysis</h3>
+                <div className="text-xs text-muted-foreground dark:text-gray-400 space-y-1">
                   <p><strong>Summary:</strong> {analysisResult.summary}</p>
                   {analysisResult.estimatedComplexity && (
                     <p><strong>Complexity:</strong> {analysisResult.estimatedComplexity}</p>
@@ -707,8 +709,8 @@ function GeneratePageContent() {
 
           {selectedComponent ? (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-              <div className="border-b border-border px-6">
-                <TabsList className="grid w-full max-w-md grid-cols-3 rounded-2xl">
+              <div className="border-b border-border dark:border-gray-600 px-6">
+                <TabsList className="grid w-full max-w-md grid-cols-3 rounded-2xl bg-gray-100 dark:bg-gray-800">
                   <TabsTrigger
                     value="preview"
                     className={cn(
@@ -753,7 +755,7 @@ function GeneratePageContent() {
                   >
                     <TabsContent value="preview" className="h-full m-0">
                       <div className="h-full p-6">
-                        <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 shadow-lg">
+                        <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 dark:bg-gray-800/80 shadow-lg dark:shadow-gray-900/20 border border-gray-200/50 dark:border-gray-700/50">
                           <CardContent className="h-full p-0">
                             {isFieldReady('previewCodes') ? (
                               createPreview(selectedComponent, selectedExampleIndex, setSelectedExampleIndex)
@@ -769,9 +771,9 @@ function GeneratePageContent() {
 
                     <TabsContent value="code" className="h-full m-0">
                       <div className="h-full p-6">
-                        <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 shadow-lg">
+                        <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 dark:bg-gray-800/80 shadow-lg dark:shadow-gray-900/20 border border-gray-200/50 dark:border-gray-700/50">
                           <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle className="text-lg">Component Code</CardTitle>
+                            <CardTitle className="text-lg text-foreground dark:text-white">Component Code</CardTitle>
                             {isFieldReady('code') && (
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button
@@ -801,9 +803,9 @@ function GeneratePageContent() {
 
                     <TabsContent value="docs" className="h-full m-0">
                       <div className="h-full p-6">
-                        <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 shadow-lg">
+                        <Card className="h-full rounded-3xl backdrop-blur-sm bg-card/80 dark:bg-gray-800/80 shadow-lg dark:shadow-gray-900/20 border border-gray-200/50 dark:border-gray-700/50">
                           <CardHeader>
-                            <CardTitle className="text-lg">Documentation</CardTitle>
+                            <CardTitle className="text-lg text-foreground dark:text-white">Documentation</CardTitle>
                           </CardHeader>
                           <CardContent className="h-[calc(100%-80px)]">
                             {isFieldReady('documentation') ? (
@@ -823,7 +825,7 @@ function GeneratePageContent() {
             </Tabs>
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
+              <div className="text-center text-muted-foreground dark:text-gray-400">
                 <Code className="w-16 h-16 mx-auto mb-4 opacity-50" />
                 <p>Select a component to view its details</p>
               </div>
@@ -838,10 +840,10 @@ function GeneratePageContent() {
 export default function GeneratePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary dark:border-blue-400 mx-auto mb-4"></div>
+          <p className="text-muted-foreground dark:text-gray-300">Loading...</p>
         </div>
       </div>
     }>

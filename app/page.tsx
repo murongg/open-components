@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function Home() {
   const [prompt, setPrompt] = React.useState("")
@@ -23,28 +24,33 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
+        {/* Theme Toggle */}
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+        
         {/* Header Title */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
-            <Sparkles className="w-12 h-12 text-primary mr-4" />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            <Sparkles className="w-12 h-12 text-primary dark:text-blue-400 mr-4" />
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               AI Component Generator
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground dark:text-gray-300 max-w-2xl mx-auto">
             Describe your needs in natural language, AI will generate a complete React component library for you
           </p>
         </div>
 
         {/* Main Content Card */}
-        <Card className="bg-transparent border-1 shadow-none">
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg dark:shadow-gray-900/20">
           <CardHeader className="text-center pb-8">
-            <CardTitle className="text-3xl font-bold text-foreground mb-4">
+            <CardTitle className="text-3xl font-bold text-foreground dark:text-white mb-4">
               Start Generating Your Components
             </CardTitle>
-            <CardDescription className="text-lg text-muted-foreground">
+            <CardDescription className="text-lg text-muted-foreground dark:text-gray-300">
               Describe the components you need, AI will generate a complete component library
             </CardDescription>
           </CardHeader>
@@ -53,7 +59,7 @@ export default function Home() {
             {/* Prompt Input Area */}
             <div className="space-y-4">
               <div>
-                <label htmlFor="prompt" className="block text-sm font-medium text-foreground mb-2">
+                <label htmlFor="prompt" className="block text-sm font-medium text-foreground dark:text-white mb-2">
                   Component Requirements Description
                 </label>
                 <Textarea
@@ -61,7 +67,7 @@ export default function Home() {
                   placeholder="For example: Generate a modern React component library with button, card, input components, supporting multiple color themes and sizes, including hover effects and animations..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[120px] resize-none text-base border-2 border-gray-50 rounded-md p-2"
+                  className="min-h-[120px] resize-none text-base border-2 border-gray-200 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-700 text-foreground dark:text-white placeholder:text-muted-foreground dark:placeholder:text-gray-400"
                   disabled={isGenerating}
                 />
               </div>
@@ -89,20 +95,20 @@ export default function Home() {
             </div>
             
             {/* Usage Tips */}
-            <div className="mt-8 p-6 bg-muted/50 rounded-2xl">
-              <h3 className="text-lg font-medium text-foreground mb-4">💡 Usage Tips</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+            <div className="mt-8 p-6 bg-gray-100/50 dark:bg-gray-700/50 rounded-2xl border border-gray-200/50 dark:border-gray-600/50">
+              <h3 className="text-lg font-medium text-foreground dark:text-white mb-4">💡 Usage Tips</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground dark:text-gray-400">
                 <div>
-                  <h4 className="font-medium text-foreground mb-2">🎯 Be Specific in Description</h4>
-                  <ul className="space-y-1">
+                  <h4 className="font-medium text-foreground dark:text-white mb-2">🎯 Be Specific in Description</h4>
+                  <ul className="space-y-1 text-muted-foreground dark:text-gray-400">
                     <li>• Specify component types (button, card, form, etc.)</li>
                     <li>• Describe style requirements (color, size, theme)</li>
                     <li>• Explain interaction effects (hover, animation, state)</li>
                   </ul>
                 </div>
                 <div>
-                  <h4 className="font-medium text-foreground mb-2">🚀 Be Clear About Functionality</h4>
-                  <ul className="space-y-1">
+                  <h4 className="font-medium text-foreground dark:text-white mb-2">🚀 Be Clear About Functionality</h4>
+                  <ul className="space-y-1 text-muted-foreground dark:text-gray-400">
                     <li>• Define component behavior and properties</li>
                     <li>• Specify component usage scenarios</li>
                     <li>• Describe component dependencies</li>
@@ -114,7 +120,7 @@ export default function Home() {
         </Card>
 
         {/* Bottom Description */}
-        <div className="text-center mt-8 text-sm text-muted-foreground">
+        <div className="text-center mt-8 text-sm text-muted-foreground dark:text-gray-400">
           <p>AI will generate complete React component code and documentation based on your description</p>
         </div>
       </div>

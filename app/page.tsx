@@ -61,7 +61,7 @@ export default function Home() {
                   placeholder="For example: Generate a modern React component library with button, card, input components, supporting multiple color themes and sizes, including hover effects and animations..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-[120px] resize-none text-base"
+                  className="min-h-[120px] resize-none text-base border-2 border-gray-50 rounded-md p-2"
                   disabled={isGenerating}
                 />
               </div>

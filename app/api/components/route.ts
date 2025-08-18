@@ -256,37 +256,127 @@ render(<ComponentName variant="ghost" size="xl" disabled={false} loading={false}
 ## Dependencies: [Possible dependency relationship list]
 
 ## Component Expansion Strategy
-[When users use vague terms like "等等", "...", "etc.", "and more", "and so on", intelligently expand to include related components. For example:
-- If they mention "Button, Card, Input 等等" or "Button, Card, Input ...", also generate: Select, Textarea, Checkbox, Radio, Switch, Modal, Tooltip, Badge, Avatar, etc.
-- If they mention "Navigation 等等" or "Navigation ...", also generate: Breadcrumb, Pagination, Tabs, Menu, Sidebar, etc.
-- Always maintain consistency with the user's style preferences (transparency, shadows, etc.)]
+**CRITICAL**: User's specific requirements MUST come FIRST. Only AFTER fulfilling explicit requests, expand with vague terms like "等等", "...", "etc.", "and more", "and so on".
+
+**EXPANSION GUIDELINES**: When users express desire for more components (using vague terms like "等等", "...", "etc.", "and more", "and so on"), generate a COMPREHENSIVE component library with 15-25+ components covering all major UI categories.
+
+**COMMON COMPONENT CATEGORIES TO GENERATE**:
+
+### 🎯 **Form Components** (Essential for any app)
+- Button (Primary, Secondary, Outline, Ghost, Destructive variants)
+- Input (Text, Email, Password, Number, Search, Textarea)
+- Select (Single, Multi, Searchable, Creatable)
+- Checkbox (Single, Group, Indeterminate)
+- Radio (Single, Group, Button style)
+- Switch (Toggle, Switch with label)
+- Slider (Range, Single value, Vertical)
+- DatePicker (Date, DateTime, Range)
+- TimePicker (Time, 12/24 hour format)
+- FileUpload (Drag & Drop, Browse, Multiple)
+- Form (Form wrapper with validation)
+- Field (Form field wrapper)
+
+### 🎨 **Layout Components** (Structure and organization)
+- Card (Basic, Header, Footer, Image, Action)
+- Container (Fluid, Fixed, Responsive)
+- Grid (12-column, Auto-fit, Responsive)
+- Flex (Row, Column, Wrap, Align)
+- Divider (Horizontal, Vertical, Text)
+- Spacer (Margin, Padding, Height, Width)
+- Section (Content section with header)
+- Container (Page container with max-width)
+
+### 🧭 **Navigation Components** (User movement and orientation)
+- Navbar (Fixed, Sticky, Responsive)
+- Sidebar (Collapsible, Nested, Responsive)
+- Breadcrumb (Simple, With icons, Separator)
+- Pagination (Numbered, Simple, With info)
+- Tabs (Horizontal, Vertical, Responsive)
+- Menu (Dropdown, Context, Mega)
+- Stepper (Linear, Non-linear, With validation)
+- Wizard (Multi-step form wizard)
+
+### 📱 **Data Display Components** (Information presentation)
+- Table (Sortable, Filterable, Paginated)
+- List (Simple, Nested, Virtualized)
+- Tree (Expandable, Selectable, Drag & drop)
+- Timeline (Vertical, Horizontal, With icons)
+- Progress (Linear, Circular, Steps)
+- Badge (Status, Count, Notification)
+- Avatar (Image, Initials, Icon, Group)
+- Tag (Removable, Selectable, Colored)
+
+### 🎭 **Feedback Components** (User interaction feedback)
+- Modal (Basic, Confirmation, Form)
+- Drawer (Left, Right, Top, Bottom)
+- Toast (Success, Error, Warning, Info)
+- Alert (Info, Success, Warning, Error)
+- Skeleton (Text, Image, Card, List)
+- Loading (Spinner, Dots, Bar, Skeleton)
+- Empty (No data, No results, No access)
+- Error (Error boundary, Error page)
+
+### 🎪 **Interactive Components** (Enhanced user experience)
+- Tooltip (Top, Bottom, Left, Right)
+- Popover (Trigger, Content, Arrow)
+- Dropdown (Menu, Split button, Mega)
+- Accordion (Single, Multiple, Nested)
+- Carousel (Auto-play, Manual, Infinite)
+- Slider (Range, Single, Vertical)
+- ColorPicker (Swatches, Picker, Input)
+- Rating (Stars, Hearts, Numbers)
+
+### 🔧 **Utility Components** (Common functionality)
+- Portal (Modal overlay, Tooltip)
+- ClickOutside (Close dropdowns, modals)
+- FocusTrap (Modal accessibility)
+- ScrollToTop (Back to top button)
+- LazyLoad (Image, Component)
+- VirtualList (Large data rendering)
+- Resizable (Resizable panels, columns)
+- DragDrop (Sortable lists, file upload)
+
+**EXPANSION RULES**:
+1. **ALWAYS generate the user's explicitly requested components FIRST**
+2. **ONLY expand when expansion terms are used** (等等, ..., etc., and more, and so on)
+3. **When expanding, aim for 15-25+ total components** covering multiple categories
+4. **Maintain design consistency** with user's style preferences (transparency, shadows, etc.)
+5. **Each component should have comprehensive props** (8-12+ props minimum)
+6. **Include both simple and complex components** for different use cases
+7. **Ensure components are production-ready** with proper TypeScript, accessibility, and error handling
+8. **Group related components logically** in the output
+9. **Provide realistic examples** for each component showing different variants and use cases
 
 Generation requirements:
-1. If user describes a single component, create one component
-2. If user describes multiple components, create each component separately
-3. If user describes functional requirements, break them down into specific components
-4. If user uses vague terms like "等等", "...", "etc.", "and more", "and so on", intelligently expand to create a comprehensive component library
-5. Use modern React syntax and TypeScript
-6. Include comprehensive Props interfaces with at least 8-12 different props covering various types (string, number, boolean, function, ReactNode, etc.)
-7. Props should include: variant, size, disabled, loading, icon, badge, className, style, onClick, onMouseEnter, children, etc.
-8. Use Tailwind CSS for styling with dynamic classes based on props
-9. Have good accessibility with proper ARIA attributes
-10. Clear code structure, easy to understand
-11. Strictly follow Markdown format, do not include other text
-12. Provide both requirements analysis and component code
-13. Maintain code formatting and readability, use appropriate indentation, line breaks and empty lines, do not compress code
-14. Ensure code is easy to read and maintain
-15. Ensure generated code is fully compatible with react-live environment and can run directly
-16. Avoid advanced syntax features not supported by react-live
-17. Code must include complete component implementation, not just JSX part
-18. Components must be able to render normally, not just function definitions
-19. Absolutely do not reference other component files, do not use import statements to import other components
-20. Each component must be completely independent, containing all necessary internal logic and styles
-21. ABSOLUTELY NO component references: Do NOT use other components like Button, Icon, etc. within any component. If you need to show interactive elements, use basic HTML elements (button, div, span, etc.) with Tailwind CSS styling
-22. If you need to display other components within a component, please implement them inline directly, do not reference external files
-23. Ensure components can run independently in isolated environments without depending on any external component dependencies
-24. For children content, use simple text, emojis, or basic HTML elements, never reference other React components
-25. Preview examples should showcase different prop combinations to demonstrate component flexibility
+1. **CRITICAL PRIORITY**: User's specific prompt requirements MUST come FIRST. Always prioritize and generate the exact components that the user explicitly requested before adding any expanded components.
+2. If user describes a single component, create that component first
+3. If user describes multiple specific components, create them in the exact order mentioned by the user
+4. If user describes functional requirements, break them down into specific components as requested
+5. **NO AUTO-EXPANSION**: By default, generate ONLY the components that the user explicitly requests. Do NOT add extra components unless expansion is explicitly requested.
+6. **EXPANSION ONLY WHEN REQUESTED**: Only AFTER fulfilling the user's explicit requirements, if user uses expansion terms like "等等", "...", "etc.", "and more", "and so on", THEN generate a COMPREHENSIVE component library with 15-25+ components covering multiple UI categories
+7. **COMPONENT CATEGORIES**: When expanding (only when requested), include components from: Forms, Layout, Navigation, Data Display, Feedback, Interactive, and Utility categories
+7. Use modern React syntax and TypeScript
+8. Include comprehensive Props interfaces with at least 8-12 different props covering various types (string, number, boolean, function, ReactNode, etc.)
+9. Props should include: variant, size, disabled, loading, icon, badge, className, style, onClick, onMouseEnter, children, etc.
+10. Use Tailwind CSS for styling with dynamic classes based on props
+11. Have good accessibility with proper ARIA attributes
+12. Clear code structure, easy to understand
+13. Strictly follow Markdown format, do not include other text
+14. Provide both requirements analysis and component code
+15. Maintain code formatting and readability, use appropriate indentation, line breaks and empty lines, do not compress code
+16. Ensure code is easy to read and maintain
+17. Ensure generated code is fully compatible with react-live environment and can run directly
+18. Avoid advanced syntax features not supported by react-live
+19. Code must include complete component implementation, not just JSX part
+20. Components must be able to render normally, not just function definitions
+21. Absolutely do not reference other component files, do not use import statements to import other components
+22. Each component must be completely independent, containing all necessary internal logic and styles
+23. ABSOLUTELY NO component references: Do NOT use other components like Button, Icon, etc. within any component. If you need to show interactive elements, use basic HTML elements (button, div, span, etc.) with Tailwind CSS styling
+24. If you need to display other components within a component, please implement them inline directly, do not reference external files
+25. Ensure components can run independently in isolated environments without depending on any external component dependencies
+26. For children content, use simple text, emojis, or basic HTML elements, never reference other React components
+27. Preview examples should showcase different prop combinations to demonstrate component flexibility
+28. **QUALITY STANDARDS**: Each expanded component should be production-ready with proper error handling, accessibility, and comprehensive documentation
 
   Please strictly follow this format, each component must contain all fields. For Preview Code, only generate the render function part (e.g., render(<ComponentName />)).`
 
@@ -294,10 +384,22 @@ Generation requirements:
 
 ${prompt}
 
-IMPORTANT: If the user uses vague terms like "等等" (etc.), "等" (and so on), "..." (ellipsis), "and more", "etc.", "and so on", please intelligently expand and generate additional related components to create a comprehensive component library. For example:
-- If they mention "Button, Card, Input 等等" or "Button, Card, Input ...", also generate: Select, Textarea, Checkbox, Radio, Switch, Modal, Tooltip, Badge, Avatar, etc.
-- If they mention "Navigation 等等" or "Navigation ...", also generate: Breadcrumb, Pagination, Tabs, Menu, Sidebar, etc.
-- Always maintain consistency with the user's style preferences (transparency, shadows, etc.)
+**CRITICAL PRIORITY**: User's specific prompt requirements MUST come FIRST. Always prioritize and generate the exact components that the user explicitly requested before adding any expanded components.
+
+**COMPONENT GENERATION LOGIC**: 
+
+**NO EXPANSION** (Default behavior): When users mention specific components WITHOUT expansion terms, generate ONLY those components exactly as requested. Do NOT add extra components.
+
+**WITH EXPANSION** (Only when explicitly requested): When users express desire for more components using expansion terms like "等等", "等", "...", "etc.", "and more", "and so on", THEN generate a COMPREHENSIVE component library with 15-25+ components covering all major UI categories.
+
+**EXPANSION EXAMPLES** (Only trigger when expansion terms are used):
+- If they mention "Button, Card, Input 等等" or "Button, Card, Input ...", first generate Button, Card, Input exactly as requested, THEN expand to include: Select, Textarea, Checkbox, Radio, Switch, Modal, Tooltip, Badge, Avatar, Table, List, Navbar, Sidebar, Tabs, Menu, Form, Alert, Toast, Progress, Timeline, and more form and layout components.
+
+- If they mention "Navigation 等等" or "Navigation ...", first generate Navigation exactly as requested, THEN expand to include: Navbar, Sidebar, Breadcrumb, Pagination, Tabs, Menu, Stepper, Wizard, and additional navigation and layout components.
+
+- If they mention "Form 等等" or "Form ...", first generate Form exactly as requested, THEN expand to include: Input, Select, Checkbox, Radio, Switch, Slider, DatePicker, TimePicker, FileUpload, Validation, and comprehensive form building components.
+
+**ALWAYS maintain consistency** with user's style preferences (transparency, shadows, etc.) and ensure each component has comprehensive props (8-12+ props minimum).
 
 CRITICAL: Each component must have comprehensive props (at least 8-12 different props) including:
 - Variant props (primary, secondary, outline, ghost, etc.)

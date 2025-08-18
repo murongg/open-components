@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -237,7 +237,7 @@ function MarkdownRenderer({ content }: { content: string }) {
   )
 }
 
-export default function GeneratePage() {
+function GeneratePageContent() {
   const searchParams = useSearchParams()
   const [components, setComponents] = useState<Component[]>([])
   const [selectedComponent, setSelectedComponent] = useState<Component | null>(null)
@@ -832,5 +832,20 @@ export default function GeneratePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function GeneratePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <GeneratePageContent />
+    </Suspense>
   )
 }
